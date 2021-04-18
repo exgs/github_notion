@@ -1,9 +1,12 @@
+int main()
+{
+	return (1);
+    char        a;
+    int     b;
+    const char *temp;
+    int main()
+    {
+        return (1);
+    }
 
-private:
-	Character(void);
-	   1   2   3   4   5   6   7   8
-	        
-	std::string			mName;
-	int					mCount;
-	AMateria*			mInventory[4];
-};
+}
