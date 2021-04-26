@@ -55,8 +55,9 @@ int main(void)
 
 	// ANCHOR 여기서부터 시작
 	int		read_ret = 0;
+	int		sum = 0;
 	timeval temp;
-	buf_size = 30000000; //300MB
+	buf_size = 210005000; //300MB
 	char *buff_rcv = (char *)malloc(buf_size * sizeof(char));
 	// memset(buff_rcv, 0, buf_size); // 10ms 정도 걸림 -> TCP 소켓한테 시간을 주는거라고 생각함
 	
@@ -66,11 +67,32 @@ int main(void)
 	// fcntl(client_socket, F_SETFL, flags);
 
 	// NOTE 2. sleep()
-	// sleep(1);
+	// sleep(5);
 
-	// ANCHOR read() BLOCKING
+	// ANCHOR 1. read() BLOCKING
 	std::cout << "read: " << (read_ret = read(client_socket, buff_rcv, buf_size)) << std::endl;
 	std::cout << "-= errno: " << errno << " " << std::strerror(errno) << " =-" << std::endl;
+
+	// ANCHOR 2. read() NONBLOCK
+	char *temp2 = buff_rcv;
+	while (0 != (read_ret = read(client_socket, temp2, buf_size)))
+	{
+		// NOTE 3. usleep() 여기에 sleep을 둬서 버퍼에 많이 담는 것보다 반복문 많이 도는게 더 빠르다;;
+		if (read_ret == -1)
+		{
+			std::cout << "read_ret: -1" << std::endl;
+			continue;
+		}
+		else
+		{
+			std::cout << "read_ret: " << read_ret << std::endl;
+			temp2 += read_ret; sum+= read_ret;
+		}
+	}
+
+	temp2[read_ret] = '\0';
+	std::cout << "sum: " << sum <<std::endl;
+
 	close(server_socket);
 	close(client_socket);
 	return (0);
