@@ -77,6 +77,7 @@ int main(void)
 	char *temp2 = buff_rcv;
 	while (0 != (read_ret = read(client_socket, temp2, buf_size)))
 	{
+		// NOTE 3. usleep() 여기에 sleep을 둬서 버퍼에 많이 담는 것보다 반복문 많이 도는게 더 빠르다;;
 		if (read_ret == -1)
 		{
 			std::cout << "read_ret: -1" << std::endl;
