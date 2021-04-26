@@ -74,3 +74,4 @@ int main(void)
 	close(server_socket);
 	close(client_socket);
 	return (0);
+}
