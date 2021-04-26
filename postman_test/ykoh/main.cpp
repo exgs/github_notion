@@ -57,12 +57,31 @@ int main(void)
 	int		read_ret = 0;
 	int		sum = 0;
 
-	buf_size = 100000;
-    char buff_rcv[buf_size];
+	buf_size = 30000000;
+	char *buff_rcv = (char *)malloc(buf_size * sizeof(char));
+    // char buff_rcv[buf_size];
 	memset(buff_rcv, 0, buf_size);
 
+	// int flags = fcntl(client_socket, F_GETFL, 0);
+	// flags |= O_NONBLOCK;	
+	// fcntl(client_socket, F_SETFL, flags);
 	// ANCHOR read() BLOCKING
+	// sleep(100);
+	errno = 0;
 	std::cout << "read: " << (read_ret = read(client_socket, buff_rcv, buf_size)) << std::endl;
+	std::cout << "-= errno: " << errno << " " << std::strerror(errno) << " =-" << std::endl;
+	errno = 0;
+	sum+= read_ret;
+	// // sleep(1);
+	// std::cout << "read: " << (read_ret = read(client_socket, buff_rcv + read_ret, buf_size)) << std::endl;
+	// std::cout << "-= errno: " << errno << " " << std::strerror(errno) << " =-" << std::endl;
+	// errno = 0;
+	// sum+= read_ret;
+	// // usleep(10);
+	// std::cout << "read: " << (read_ret = read(client_socket, buff_rcv + read_ret, buf_size)) << std::endl;
+	// std::cout << "-= errno: " << errno << " " << std::strerror(errno) << " =-" << std::endl;
+	// errno = 0;
+	// sum+= read_ret;
 
 
 	// ANCHOR read() NONBLOCKING
@@ -90,7 +109,7 @@ int main(void)
 	}
 	int num = 0;
 	char *temp2 = buff_rcv + num;
-	if (write(fd, temp2, read_ret - num) < 0)
+	if (write(fd, temp2, sum - num) < 0)
 	{
 		perror("close_error: ");
 		close(fd);
@@ -103,3 +122,5 @@ int main(void)
 	close(client_socket);
 	return (0);
 }
+// 120792
+// 150272
