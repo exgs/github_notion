@@ -1,0 +1,24 @@
+{
+	"Company":
+	[
+		{
+			"Name": "Apple",
+			"Operating System":
+			[
+				"macOS",
+				"iOS"
+			]
+		},
+		{
+			"Name": "Apple",
+			"Operating System":
+			[
+				"MS-DOS",
+				"windows"
+			]
+		}
+		
+	],
+	"Cafeteria": false,
+	"Incentive": null
+}
