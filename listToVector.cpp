@@ -31,7 +31,7 @@ int main()
 	vector<vector<int> > v;
 	for (size_t i = 0; i < 11; i++)
 	{
-		v.push_back(std::vector<int>(begin(arr[i]), end(arr[i])));
+		v.push_back(vector<int>(begin(arr[i]), end(arr[i])));
 	}
 	print_vector(v);
 }
