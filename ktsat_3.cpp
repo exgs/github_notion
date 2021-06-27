@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -30,8 +31,8 @@ class Node
 		int dnode_num = 0;
 		int totalnode;
 
-	// dnode_num == 0인 경우에, 아래 있는 속성값들을 채워나간다.
 	public:
+		// dnode_num == 0인 경우에, rank 구조체 값을 채움
 		Rank rank;
 
 };
@@ -39,86 +40,117 @@ class Node
 void print_nodes(Node *nodelist);
 void print_vnodes(std::vector<Node> v_nodes);
 
+#define CHANGE 1
+#define SAME 0
+#define UNCHANGE -1
 
-
-void SetAnswer(std::vector<string> answer, std::vector<Node> find_list)
+vector<string> Setanswer(std::vector<Node> &find_list, Node *nodelist, int nodelist_total)
 {
-	std::vector<Node> arranged_list;
-	bool flag = false;
-	for (size_t i = 0; i < find_list.size(); i++)
+	vector<string> answer;
+	string temp;
+	int pnode = -1;
+	std::vector<Node>::iterator it = find_list.begin();
+	while (it != find_list.end())
 	{
-		if (arranged_list.size() == 0)
-			arranged_list.push_back(find_list[i]);
+		temp = it->value;
+		pnode = it->pnode;
+		while (pnode != 0)
+		{
+			for (size_t i = 0; i < nodelist_total; i++)
+			{
+				if (pnode == nodelist[i].inode)
+				{
+					pnode = nodelist[i].pnode;
+					temp.insert(0, nodelist[i].value + "/");
+					break;
+				}
+			}
+		}
+		answer.push_back(temp);
+		it++;
+	}
+	return (answer);
+}
+
+int classify_same_word_idx(std::vector<int> cur, std::vector<int> before)
+{
+	for (size_t i = 0; i < cur.size(); i++)
+	{
+		if (cur[i] < before[i])
+			return (CHANGE);
+		else if (cur[i] > before[i])
+			return (UNCHANGE);
+	}
+	return SAME;
+}
+
+void Sort_find_list(std::vector<Node> &find_list, string word)
+{
+	if (find_list.size() == 0)
+		return ;
+	std::vector<Node>::iterator cur = find_list.begin();
+	std::vector<Node>::iterator before = cur;
+	int i = 0;
+	while (cur != find_list.end())
+	{
+		bool flag = false;
+		if ((cur->value.size() != word.size() && before->value.size() == word.size()))
+		{
+
+		}
+		else if ((cur->value.size() == word.size() && before->value.size() != word.size()))
+		{
+			iter_swap(cur, before);
+			flag = true;
+		}
+		else if ((cur->value.size() == word.size() && before->value.size() == word.size()))
+		{
+			if (cur->inode < before->inode)
+			{
+				iter_swap(cur, before);
+				flag = true;
+			}
+		}
 		else
 		{
-			Rank &rank = find_list[i].rank;
-			vector<Node>::iterator it = arranged_list.begin();
-			while (it != arranged_list.end())
+			if (cur->rank.same_word < before->rank.same_word)
+			{}
+			else if (cur->rank.same_word > before->rank.same_word)
 			{
-				if (it->rank.same_word < rank.same_word)
-				{
-					arranged_list.insert(it, find_list[i]);
-					flag = true;
-					break ;
-				}
-				else if (it->rank.same_word == rank.same_word) // 이 코드 블록에 들어오면, 결판 보게 됨
-				{
-					while (it != arranged_list.end())
-					{
-						int x = 0;
-						while (x < rank.same_word_idx.size())
-						{
-							if (it->rank.same_word_idx[x] > rank.same_word_idx[x])
-							{
-
-								arranged_list.insert(it, find_list[i]);
-								flag = true;
-								break ;
-							}
-							if (x == rank.same_word_idx.size())
-							{
-								if (it->inode > find_list[i].inode)
-								{
-									arranged_list.insert(it, find_list[i]);
-									flag = true;
-									break ;
-								}
-								else
-								{
-									it++;
-									arranged_list.insert(it, find_list[i]);
-									flag = true;
-									break ;
-								}
-							}
-							x++;
-							if (flag == true)
-								break;
-						}
-						if (flag == true)
-							break;
-						it++;
-					}
-					if (flag == true)
-						break;
-					// arranged_list.insert(it, find_list[i]);
-					// break;
-				}
-				it++;
-
+				iter_swap(cur, before);
+				flag = true;
 			}
-			
-			// for (size_t j = 0; j < arranged_list.size(); j++)
-			// {
-			// 	if (arranged_list[i].rank.same_word != find_list[i].rank.same_word)
-			// 		continue;
-			// 	else
-			// 	{
-
-			// 	}
-			// }
-			
+			else // (cur->rank.same_word == before->rank.same_word)
+			{
+				int flag_same_word = classify_same_word_idx(cur->rank.same_word_idx, 
+											before->rank.same_word_idx);
+				if (flag_same_word == UNCHANGE)
+				{}
+				else if (flag_same_word == CHANGE)
+				{
+					iter_swap(cur, before);
+					flag = true;
+				}
+				else // SAME
+				{
+					if (cur->inode < before->inode)
+					{
+						iter_swap(cur, before);
+						flag = true;
+					}
+				}
+			}
 		}
+		if (flag == true)
+		{
+			cur = find_list.begin();
+			before = cur;
+		}
+		else
+		{
+			before = cur;
+		}
+		cur++;
 	}
 }
 
@@ -134,7 +166,7 @@ void SetLeafRank(Node &leafnode, string word)
 
 		rank.same_word++;
 		rank.same_word_idx.push_back(idx);
-		before_length += idx + word.length();
+		before_length = idx + word.length();
 	}
 }
 
@@ -190,28 +222,30 @@ vector<string> solution(vector<string> data, string word)
 			find_list.push_back(nodelist[i]);
 		}
 	}
-	
 
-	cout << "Total find: " << find_list.size() << endl;
-
-	//TODO find_list에 있는 것들
-
-	// STUB debugging
+	// 핵심 코어
+	Sort_find_list(find_list, word);
+	answer = Setanswer(find_list, nodelist, data.size());
+	// STUB PRINT
 	print_vnodes(find_list);
 	// print_nodes(nodelist);
+	if (answer.size() == 0)
+	{
+		string temp = "Your search for (" + word + ") didn't return any results";
+		answer.push_back(temp);
+	}
+	cout << "Total find: " << find_list.size() << endl;
+	for (size_t i = 0; i < answer.size(); i++)
+	{
+		cout << answer[i] << endl;
+	}
 	return (answer);
 }
 
 int main()
 {
-	string arr[] = {"1 GRAY 0", "2 MUSSEUK 0", "3 DOLL 1", "4 DOLL 2", "5 LARGE-GRAY 3", "6 SMALL-GRAY 3", "7 WHITE-MUSSEUK 4", "8 GRAY-MUSSEUK 4"};
-	std::vector<string> v;
-	for (size_t i = 0; i < 8; i++)
-	{
-		std::string temp = arr[i];
-		v.push_back(temp);
-	}
-	vector<string> answer =  solution(v, "GRAY");
+	std::vector<string> v = {"1 ROOTA 0", "2 AA 1", "3 ZZI 1", "4 AABAA 1", "5 AAAAA 1", "6 AAAA 1", "7 BAAAAAAA 1", "8 BBAA 1", "9 CAA 1", "10 ROOTB 0", "11 AA 10"};
+	vector<string> answer =  solution(v, "AA");
 
 	// for (size_t i = 0; i < 8; i++)
 	// {
