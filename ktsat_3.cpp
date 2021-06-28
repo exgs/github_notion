@@ -176,6 +176,7 @@ vector<string> solution(vector<string> data, string word)
 	Node nodelist[data.size()];
 	vector<string> answer;
 
+	// STUB 1. string 데이터를 struct 데이터로 변환해서 담음
 	for (size_t i = 0; i < data.size(); i++)
 	{
 		std::string temp;
@@ -198,7 +199,7 @@ vector<string> solution(vector<string> data, string word)
 		nodelist[i].totalnode = data.size();
 	}
 
-	// STUB leaf와 non-leaf를 나눔
+	// STUB 2. leaf와 non-leaf를 나누는 기준을 만들기위해서 구조체에 dnode_num을 추가함
 	for (size_t i = 0; i < data.size(); i++)
 	{
 		for (size_t j = 0; j < data.size(); j++)
@@ -210,6 +211,7 @@ vector<string> solution(vector<string> data, string word)
 		}
 	}
 
+	// STUB 3. word가 들어가는 node를 find_list에 넣어둠
 	vector<Node> find_list;
 	for (size_t i = 0; i < data.size(); i++)
 	{
@@ -222,18 +224,20 @@ vector<string> solution(vector<string> data, string word)
 			find_list.push_back(nodelist[i]);
 		}
 	}
-
-	// 핵심 코어
-	Sort_find_list(find_list, word);
-	answer = Setanswer(find_list, nodelist, data.size());
-	// STUB PRINT
-	print_vnodes(find_list);
-	// print_nodes(nodelist);
-	if (answer.size() == 0)
+	if (find_list.size() == 0)
 	{
 		string temp = "Your search for (" + word + ") didn't return any results";
 		answer.push_back(temp);
+		return (answer);
 	}
+
+	// STUB 4. find_list를 문제조건에 따라서, Sorting함
+	Sort_find_list(find_list, word);
+	// STUB 5. find_list value값을 가공하여 string 형태로 return함.
+	answer = Setanswer(find_list, nodelist, data.size());
+
+	// STUB PRINT
+	print_vnodes(find_list);
 	cout << "Total find: " << find_list.size() << endl;
 	for (size_t i = 0; i < answer.size(); i++)
 	{
@@ -247,10 +251,6 @@ int main()
 	std::vector<string> v = {"1 ROOTA 0", "2 AA 1", "3 ZZI 1", "4 AABAA 1", "5 AAAAA 1", "6 AAAA 1", "7 BAAAAAAA 1", "8 BBAA 1", "9 CAA 1", "10 ROOTB 0", "11 AA 10"};
 	vector<string> answer =  solution(v, "AA");
 
-	// for (size_t i = 0; i < 8; i++)
-	// {
-	// 	cout << v[i] << endl;
-	// }	
 	return (0);
 }
 
