@@ -1,4 +1,4 @@
 [submodule "algorithm"]
 	path = algorithm
 	url = git@github.com:exgs/algorithm.git
-	branch = main
+	branch = origin/main
