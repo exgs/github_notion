@@ -1,0 +1,4 @@
+[submodule "algorihtm"]
+	path = algorihtm
+	url = git@github.com:exgs/algorithm.git
+	branch = origin/main
